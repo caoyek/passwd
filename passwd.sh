@@ -2,7 +2,7 @@
 # ============================================================
 #  一键设置强密码脚本
 #  功能：生成 15-20 位随机强密码并自动修改当前用户密码
-#  字符集：大小写字母 + 数字 + 常用符号
+#  字符集：大小写字母 + 数字 + 简洁符号（! @ # $ % & *）
 # ============================================================
 
 set -euo pipefail
@@ -17,7 +17,7 @@ RESET='\033[0m'
 
 # ---------- 生成密码 ----------
 generate_password() {
-    local charset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?'
+    local charset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*'
     local length=$(( RANDOM % 6 + 15 ))   # 15 ~ 20 位
 
     # 用 /dev/urandom 保证随机性
