@@ -4,7 +4,7 @@
 #  功能：创建临时用户，密码带秒级时间戳+随机10位，到期后自动删除
 # ============================================================
 
-set -euo pipefail
+
 
 # ---------- 颜色定义 ----------
 GREEN='\033[0;32m'
@@ -14,7 +14,7 @@ RED='\033[0;31m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-USER="tmproot"
+TMP_USER="tmproot"
 MS=$(date +%s)
 RAND=$(tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' < /dev/urandom | head -c 10)
 PASS="Tmp@${MS}@${RAND}"
@@ -56,29 +56,29 @@ if ! command -v at &>/dev/null; then
 fi
 
 # ---------- 如果用户已存在先清理 ----------
-if id "$USER" &>/dev/null; then
+if id "$TMP_USER" &>/dev/null; then
     echo -e "  ${YELLOW}⚙  检测到旧用户，正在清理...${RESET}"
-    userdel -r "$USER" 2>/dev/null || true
+    userdel -r "$TMP_USER" 2>/dev/null || true
 fi
 
 # ---------- 创建用户 ----------
-useradd -m -G sudo "$USER" 2>/dev/null || useradd -m -G wheel "$USER"
-echo "$USER:$PASS" | chpasswd
+useradd -m -G sudo "$TMP_USER" 2>/dev/null || useradd -m -G wheel "$TMP_USER"
+echo "$TMP_USER:$PASS" | chpasswd
 
 # ---------- 定时删除 ----------
-echo "userdel -r $USER" | at now + ${EXPIRE} hour 2>/dev/null
+echo "userdel -r $TMP_USER" | at now + ${EXPIRE} hour 2>/dev/null
 
 # ---------- 打印结果 ----------
 echo ""
 echo -e "${CYAN}${BOLD}╔══════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}${BOLD}║           ✅  临时用户创建成功！          ║${RESET}"
 echo -e "${CYAN}${BOLD}╠══════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}${BOLD}║${RESET}  用户名 ：${BOLD}${USER}${RESET}"
+echo -e "${CYAN}${BOLD}║${RESET}  用户名 ：${BOLD}${TMP_USER}${RESET}"
 echo -e "${CYAN}${BOLD}║${RESET}  密  码 ：${BOLD}${GREEN}${PASS}${RESET}"
 echo -e "${CYAN}${BOLD}║${RESET}  有效期 ：${BOLD}${EXPIRE} 小时后自动删除${RESET}"
 echo -e "${CYAN}${BOLD}╠══════════════════════════════════════════╣${RESET}"
 echo -e "${CYAN}${BOLD}║${RESET}  ${YELLOW}👆 请立即复制上方密码并发送给对方${RESET}"
 echo -e "${CYAN}${BOLD}╚══════════════════════════════════════════╝${RESET}"
 echo ""
-echo -e "  ${YELLOW}💡  用完立即手动删除：${BOLD}userdel -r ${USER}${RESET}"
+echo -e "  ${YELLOW}💡  用完立即手动删除：${BOLD}userdel -r ${TMP_USER}${RESET}"
 echo ""
