@@ -20,7 +20,7 @@ USER="tmproot"
 MS=$(date +%s%3N)
 
 # 随机 10 位英文+数字
-RAND=$(cat /dev/urandom | tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' | head -c 10)
+RAND=$(tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' < /dev/urandom | dd bs=10 count=1 2>/dev/null)
 
 PASS="Tmp@${MS}@${RAND}"
 
