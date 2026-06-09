@@ -16,11 +16,11 @@ RESET='\033[0m'
 
 USER="tmproot"
 
-# 毫秒时间戳
-MS=$(date +%s%3N)
+# 秒级时间戳（兼容所有Linux）
+MS=$(date +%s)
 
 # 随机 10 位英文+数字
-RAND=$(tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' < /dev/urandom | dd bs=10 count=1 2>/dev/null)
+RAND=$(tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' < /dev/urandom | head -c 10)
 
 PASS="Tmp@${MS}@${RAND}"
 
@@ -40,7 +40,7 @@ fi
 
 # ---------- 提示输入有效小时数 ----------
 echo -ne "  请输入临时用户有效时长（小时），直接回车默认 24 小时：${BOLD}"
-read -r INPUT_EXPIRE
+read -r INPUT_EXPIRE < /dev/tty
 echo -e "${RESET}"
 
 # 校验是否为正整数，否则用默认值
