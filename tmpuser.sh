@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
 #  临时 sudo 用户脚本
-#  功能：创建临时用户，密码带时间戳，1小时后自动删除
+#  功能：创建临时用户，密码带毫秒时间戳+随机10位，到期后自动删除
 # ============================================================
 
 set -euo pipefail
@@ -15,8 +15,14 @@ BOLD='\033[1m'
 RESET='\033[0m'
 
 USER="tmproot"
-PASS="Tmp@$(date +%s)"
-EXPIRE=1  # 小时
+
+# 毫秒时间戳
+MS=$(date +%s%3N)
+
+# 随机 10 位英文+数字
+RAND=$(cat /dev/urandom | tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' | head -c 10)
+
+PASS="Tmp@${MS}@${RAND}"
 
 clear
 echo ""
@@ -30,6 +36,20 @@ if [[ $EUID -ne 0 ]]; then
     echo -e "  ${RED}✘  请用 sudo 运行此脚本${RESET}"
     echo -e "     ${BOLD}sudo bash tmpuser.sh${RESET}"
     exit 1
+fi
+
+# ---------- 提示输入有效小时数 ----------
+echo -ne "  请输入临时用户有效时长（小时），直接回车默认 24 小时：${BOLD}"
+read -r INPUT_EXPIRE
+echo -e "${RESET}"
+
+# 校验是否为正整数，否则用默认值
+if [[ "$INPUT_EXPIRE" =~ ^[1-9][0-9]*$ ]]; then
+    EXPIRE=$INPUT_EXPIRE
+else
+    EXPIRE=24
+    echo -e "  ${YELLOW}⚙  未输入有效数字，使用默认 24 小时${RESET}"
+    echo ""
 fi
 
 # ---------- 检查并安装 at ----------
