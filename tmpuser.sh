@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
 #  临时 sudo 用户脚本
-#  功能：创建临时用户，密码带毫秒时间戳+随机10位，到期后自动删除
+#  功能：创建临时用户，密码带秒级时间戳+随机10位，到期后自动删除
 # ============================================================
 
 set -euo pipefail
@@ -15,16 +15,12 @@ BOLD='\033[1m'
 RESET='\033[0m'
 
 USER="tmproot"
-
-# 秒级时间戳（兼容所有Linux）
 MS=$(date +%s)
-
-# 随机 10 位英文+数字
 RAND=$(tr -dc 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' < /dev/urandom | head -c 10)
-
 PASS="Tmp@${MS}@${RAND}"
 
-clear
+clear || true
+
 echo ""
 echo -e "${CYAN}${BOLD}╔══════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}${BOLD}║        🔑  临时用户创建工具              ║${RESET}"
